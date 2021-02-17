@@ -2,34 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:currency_converter/models/currencies.dart';
 
 class QuoteModel extends ChangeNotifier {
-  final Map quoteValues = {
-    "USDEUR": 3.672982,
-    "USDUSD": 1,
-    "USDBRL": 57.8836,
-    "USDGBP": 126.1652,
-    "USDINR": 475.306,
-    "USDAUD": 1.78952,
-    "USDCAD": 109.216875,
-    "USDSGD": 8.901966,
-    "USDJPY": 1.269072,
-    "USDCNY": 1.792375,
-    "USDKRW": 1.04945,
-  };
+  final Map<String, dynamic> quoteValues;
+  final bool success;
 
-  CurrencyModel _currencies;
+  QuoteModel({this.quoteValues, this.success});
 
-  CurrencyModel get currencies => _currencies;
+  factory QuoteModel.fromJson(Map<String, dynamic> json) {
+    return QuoteModel(
+      success: json['success'],
+      quoteValues: json['quotes'] != null
+          ? new Map<String, dynamic>.from(json['quotes'])
+          : null,
+    );
+  }
 
-  set currencies(CurrencyModel newCurrencies) {
-    _currencies = newCurrencies;
+  Currency currencyFrom, currencyTo;
+
+  void selectFrom(Currency currency) {
+    if(currencyTo == currency) {currencyTo = null;}
+    currencyFrom = currency;
     notifyListeners();
   }
 
-  double valueCalculated;
+  void selectTo(Currency currency) {
+    if(currencyFrom == currency) {currencyFrom = null;}
+    currencyTo = currency;
+    notifyListeners();
+  }
 
-  String getCodePairFrom() => 'USD' + _currencies.currencyFrom?.code;
+  void swapFromTo() {
+    var currency = currencyFrom;
+    currencyFrom = currencyTo;
+    currencyTo = currency;
+    notifyListeners();
+  }
 
-  String getCodePairTo() => 'USD' + _currencies.currencyTo?.code;
+  double amount;
+  double result;
+  int hasNewResult = 0;
+
+  String getCodePairFrom() => 'USD' + currencyFrom?.code;
+
+  String getCodePairTo() => 'USD' + currencyTo?.code;
 
   double getQuoteOfFromUSD() => 1/quoteValues[getCodePairFrom()].toDouble();
 
@@ -37,8 +51,10 @@ class QuoteModel extends ChangeNotifier {
 
   double getQuote() => getQuoteOfFromUSD()*getQuoteOfUSDTo().toDouble();
 
-  void calculate(double amount) {
-    valueCalculated = amount*getQuote().toDouble();
+  void calculate(double newAmount) {
+    amount = newAmount;
+    result = newAmount*getQuote().toDouble();
+    hasNewResult++;
     notifyListeners();
   }
 }
