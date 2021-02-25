@@ -16,6 +16,12 @@ class QuoteModel extends ChangeNotifier {
     );
   }
 
+  Map<String, dynamic> toJson() =>
+      {
+        'success': success,
+        'quotes': quoteValues,
+      };
+
   Currency currencyFrom, currencyTo;
 
   void selectFrom(Currency currency) {

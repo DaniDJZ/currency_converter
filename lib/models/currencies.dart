@@ -15,6 +15,12 @@ class CurrencyModel extends ChangeNotifier {
     );
   }
 
+  Map<String, dynamic> toJson() =>
+      {
+        'success': success,
+        'currencies': currencyNames,
+      };
+
   List<Currency> favoriteCurrency = [];
 
   Currency getByPosition(int id) {

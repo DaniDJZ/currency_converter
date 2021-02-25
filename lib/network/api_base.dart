@@ -13,6 +13,9 @@ class ApiBase {
     try {
       final response = await http.get(_baseUrl + url + '?access_key=' + _accessKey);
       responseJson = _response(response);
+      if (responseJson['success'] == false) {
+        throw ApiRequestException(responseJson['error']['info']);
+      }
     } on SocketException {
       throw NoInternetException();
     }

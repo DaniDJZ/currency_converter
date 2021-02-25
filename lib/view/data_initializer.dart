@@ -20,6 +20,7 @@ class _CurrencyListInitializerViewState extends State<CurrencyListInitializerVie
   void initState() {
     super.initState();
     _currencyListBloc = context.read<CurrencyListBloc>();
+    _currencyListBloc.fetchCurrencyList();
   }
 
   @override
@@ -39,11 +40,14 @@ class _CurrencyListInitializerViewState extends State<CurrencyListInitializerVie
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               switch (snapshot.data.status) {
-                case Status.LOADING:
+                case Status.FETCHING:
                   return _Loading(message: snapshot.data.message);
                   break;
                 case Status.COMPLETED:
                   return QuoteInitializerView();
+                  break;
+                case Status.LOADED:
+                  return MyConverter();
                   break;
                 case Status.ERROR:
                   return _Error(
@@ -77,6 +81,7 @@ class _QuoteInitializerViewState extends State<QuoteInitializerView> {
   void initState() {
     super.initState();
     _quoteBloc = context.read<QuoteBloc>();
+    _quoteBloc.fetchQuote();
   }
 
   @override
@@ -87,9 +92,10 @@ class _QuoteInitializerViewState extends State<QuoteInitializerView> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               switch (snapshot.data.status) {
-                case Status.LOADING:
+                case Status.FETCHING:
                   return _Loading(message: snapshot.data.message);
                   break;
+                case Status.LOADED:  // fall-through to Status.COMPLETED
                 case Status.COMPLETED:
                   return MyConverter();
                   break;
@@ -126,6 +132,7 @@ class _Loading extends StatelessWidget {
         children: [
           Text(
             message,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 24,
             ),
@@ -168,12 +175,44 @@ class _Error extends StatelessWidget {
           ),
           SizedBox(height: 12),
           RaisedButton(
-            color: Colors.blue,
+            color: Colors.red,
             child: Text('Retry', style: TextStyle(color: Colors.white)),
             onPressed: onRetryPressed,
-          )
+          ),
+          SizedBox(height: 12),
+          errorResponse.error is NoInternetException
+              ? _LoadLocalStorage() : Container()
         ],
       ),
+    );
+  }
+}
+
+class _LoadLocalStorage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Or continue with local data',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24,
+            ),
+          ),
+          SizedBox(height: 12),
+          RaisedButton(
+            color: Colors.blue,
+            child: Text('Continue', style: TextStyle(color: Colors.white)),
+            onPressed: () {
+              var currencyListBloc = context.read<CurrencyListBloc>();
+              var quoteBloc = context.read<QuoteBloc>();
+              currencyListBloc.loadSharedPrefs();
+              quoteBloc.loadSharedPrefs();
+            },
+          ),
+        ]
     );
   }
 }

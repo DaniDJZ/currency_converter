@@ -4,9 +4,10 @@ class ApiResponse<T> {
   String message;
   dynamic error;
 
-  ApiResponse.loading(this.message) : status = Status.LOADING;
+  ApiResponse.fetching(this.message) : status = Status.FETCHING;
   ApiResponse.completed(this.data) : status = Status.COMPLETED;
+  ApiResponse.loaded(this.data) : status = Status.LOADED;
   ApiResponse.error(this.error) : status = Status.ERROR;
 }
 
-enum Status { LOADING, COMPLETED, ERROR }
+enum Status { FETCHING, COMPLETED, LOADED, ERROR }

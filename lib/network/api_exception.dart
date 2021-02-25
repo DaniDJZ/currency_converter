@@ -14,7 +14,7 @@ class NoInternetException extends ApiException {
 }
 
 class FetchDataException extends ApiException {
-  FetchDataException([String message]) : super(message, 'Error During Communication: ');
+  FetchDataException([message]) : super(message, 'Error During Communication: ');
 }
 
 class BadRequestException extends ApiException {
@@ -26,5 +26,9 @@ class UnauthorizedException extends ApiException {
 }
 
 class InvalidInputException extends ApiException {
-  InvalidInputException([String message]) : super(message, 'Invalid Input: ');
+  InvalidInputException([message]) : super(message, 'Invalid Input: ');
+}
+
+class ApiRequestException extends ApiException {
+  ApiRequestException([message]) : super(message, '');
 }
