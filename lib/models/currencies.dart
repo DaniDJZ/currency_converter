@@ -21,11 +21,33 @@ class CurrencyModel extends ChangeNotifier {
         'currencies': currencyNames,
       };
 
+  Map<String, dynamic> favoriteToJson() =>
+      {
+        'favorites': favoriteCurrency.map((currency) => currency.id).toList(),
+      };
+
+  void loadFavorite(Map<String, dynamic> json) {
+    var favorites = json['favorites'];
+    favoriteCurrency = favorites != null
+        ? List.from(favorites).map((id) => getByPosition(id)).toList()
+        : [];
+  }
+
   List<Currency> favoriteCurrency = [];
 
   Currency getByPosition(int id) {
     String code = currencyNames.keys.elementAt(id);
     return Currency(id, code, currencyNames[code]);
+  }
+
+  void addFavorite(Currency currency) {
+    favoriteCurrency.add(currency);
+    notifyListeners();
+  }
+
+  void removeFavorite(Currency currency) {
+    favoriteCurrency.remove(currency);
+    notifyListeners();
   }
 }
 

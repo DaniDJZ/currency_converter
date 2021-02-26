@@ -1,4 +1,5 @@
 import 'package:currency_converter/models/quotes.dart';
+import 'package:currency_converter/services/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_converter/models/currencies.dart';
@@ -50,7 +51,9 @@ class _MyCurrencyListState extends State<MyCurrencyList> {
   }
   @override
   Widget build(BuildContext context) {
-    var currencies = context.read<CurrencyModel>();
+    var listLength = context.select<CurrencyModel, int>(
+            (currencies) => currencies.favoriteCurrency.length + currencies.currencyNames.length
+    );
 
     return Scaffold(
         body: GestureDetector(
@@ -62,7 +65,7 @@ class _MyCurrencyListState extends State<MyCurrencyList> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                       (context, index) => _CurrencyListItem(index: index, selecting: widget.selecting, controller: textController),
-                  childCount: currencies.favoriteCurrency.length + currencies.currencyNames.length,
+                  childCount: listLength,
                 ),
               ),
             ],
@@ -227,33 +230,26 @@ class _CurrencyListItem extends StatelessWidget {
   }
 }
 
-class _FavoriteIconButton extends StatefulWidget {
+class _FavoriteIconButton extends StatelessWidget {
   final Currency currency;
   _FavoriteIconButton({@required this.currency, Key key}) : super(key: key);
 
   @override
-  __FavoriteIconButtonState createState() => __FavoriteIconButtonState();
-}
-
-class __FavoriteIconButtonState extends State<_FavoriteIconButton> {
-  @override
   Widget build(BuildContext context) {
-    var currencies = context.read<CurrencyModel>();
-    final alreadyFavorite = currencies.favoriteCurrency.contains(widget.currency);
+    var alreadyFavorite = context.select<CurrencyModel, bool>(
+          (currencies) => currencies.favoriteCurrency.contains(currency)
+    );
     return IconButton(
         icon: Icon(
           alreadyFavorite? Icons.favorite : Icons.favorite_border,
           color: alreadyFavorite ? Colors.red : null,
         ),
         onPressed:() {
-          setState(() {
-            if (alreadyFavorite) {
-              currencies.favoriteCurrency.remove(widget.currency);
-            } else {
-              currencies.favoriteCurrency.add(widget.currency);
-            }
-          });
-        },
+          var currencies = context.read<CurrencyModel>();
+          alreadyFavorite ? currencies.removeFavorite(currency) : currencies.addFavorite(currency);
+          SharedPrefs sharedPrefs = SharedPrefs();
+          sharedPrefs.set('favorites', currencies.favoriteToJson());
+        }
     );
   }
 }

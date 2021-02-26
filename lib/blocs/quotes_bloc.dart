@@ -34,7 +34,6 @@ class QuoteBloc extends ChangeNotifier {
       quoteDataSink.add(ApiResponse.error(e));
       print(e.toString());
     }
-    notifyListeners();
   }
 
   loadSharedPrefs() async {
@@ -46,7 +45,6 @@ class QuoteBloc extends ChangeNotifier {
       quoteDataSink.add(ApiResponse.error(e));
       print(e.toString());
     }
-    notifyListeners();
   }
 
   dispose() {

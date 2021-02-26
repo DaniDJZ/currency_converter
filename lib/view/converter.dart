@@ -161,8 +161,7 @@ class _ResultText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var hasNewResult =
-        context.select<QuoteModel, int>((quotes) => quotes?.hasNewResult);
+    var hasNewResult = context.select<QuoteModel, int>((quotes) => quotes?.hasNewResult);
     var quotes = context.read<QuoteModel>();
     var resultText;
 

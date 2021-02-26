@@ -29,24 +29,28 @@ class CurrencyListBloc extends ChangeNotifier {
     try {
       _currencies = await _currencyListRepository.fetchCurrencyList();
       _sharedPrefs.set('currencies', _currencies.toJson());
+      if (await _sharedPrefs.contains('favorites')) {
+        _currencies.loadFavorite(await _sharedPrefs.get('favorites'));
+      }
       currencyListSink.add(ApiResponse.completed(_currencies));
     } catch (e) {
       currencyListSink.add(ApiResponse.error(e));
       print(e.toString());
     }
-    notifyListeners();
   }
 
   loadSharedPrefs() async {
     currencyListSink.add(ApiResponse.fetching('Getting Data\nFrom Local Storage...'));
     try {
       _currencies = CurrencyModel.fromJson(await _sharedPrefs.get('currencies'));
+      if (await _sharedPrefs.contains('favorites')) {
+        _currencies.loadFavorite(await _sharedPrefs.get('favorites'));
+      }
       currencyListSink.add(ApiResponse.loaded(_currencies));
     } catch (e) {
       currencyListSink.add(ApiResponse.error(e));
       print(e.toString());
     }
-    notifyListeners();
   }
 
   dispose() {

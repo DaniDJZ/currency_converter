@@ -3,6 +3,7 @@ import 'package:currency_converter/blocs/quotes_bloc.dart';
 import 'package:currency_converter/models/quotes.dart';
 import 'package:currency_converter/network/api_exception.dart';
 import 'package:currency_converter/network/api_response.dart';
+import 'package:currency_converter/services/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_converter/models/currencies.dart';
@@ -205,11 +206,21 @@ class _LoadLocalStorage extends StatelessWidget {
           RaisedButton(
             color: Colors.blue,
             child: Text('Continue', style: TextStyle(color: Colors.white)),
-            onPressed: () {
-              var currencyListBloc = context.read<CurrencyListBloc>();
-              var quoteBloc = context.read<QuoteBloc>();
-              currencyListBloc.loadSharedPrefs();
-              quoteBloc.loadSharedPrefs();
+            onPressed: () async {
+              SharedPrefs sharedPrefs = SharedPrefs();
+              if (await sharedPrefs.contains('currencies') && await sharedPrefs.contains('quotes')) {
+                var currencyListBloc = context.read<CurrencyListBloc>();
+                var quoteBloc = context.read<QuoteBloc>();
+                currencyListBloc.loadSharedPrefs();
+                quoteBloc.loadSharedPrefs();
+              } else {
+                Scaffold.of(context)
+                    .showSnackBar(SnackBar(
+                      content: Text(
+                        'There\'s no local data yet...\nPlease retry when connected to internet!',
+                        style: TextStyle(fontSize: 20),
+                      )));
+              }
             },
           ),
         ]
