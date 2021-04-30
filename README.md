@@ -1,4 +1,4 @@
-# Desafio BTG
+# Desafio BTG - Flutter
 
 Seja bem-vindo! Este é o seu primeiro passo para fazer parte do time de desenvolvimento do maior banco de investimentos da América Latina.
 
