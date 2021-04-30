@@ -4,7 +4,7 @@ Seja bem-vindo! Este é o seu primeiro passo para fazer parte do time de desenvo
 
 #### LEIA AS INSTRUÇÕES POR COMPLETO ANTES DE COMEÇAR
 
-O Desafio consiste no desenvolvimento de um app de conversão de moedas em _Flutter_. 
+O Desafio consiste no desenvolvimento de um app de conversão de moedas em **Flutter**. 
 
 O app deve permitir que o usuário selecione a moeda de origem e a moeda a ser convertida, para então inserir o valor e visualizar o resultado da conversão. 
 
