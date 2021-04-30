@@ -1,43 +1,52 @@
 import 'package:flutter/material.dart';
 
 class CurrencyModel extends ChangeNotifier {
-  final Map currencyNames = {
-    'USD': 'US Dollar',
-    'EUR': 'Euro',
-    'BRL': 'Brazilian Real',
-    'GBP': 'British Pound',
-    'INR': 'Indian Rupee',
-    'AUD': 'Australian Dollar',
-    'CAD': 'Canadian Dollar',
-    'SGD': 'Singapore Dollar',
-    'JPY': 'Japanese Yen',
-    'CNY': 'Chinese Yuan',
-    'KRW': 'South Korean Won',
-  };
+  final Map<String, String> currencyNames;
+  final bool success;
 
-  Currency currencyFrom, currencyTo;
+  CurrencyModel({this.currencyNames, this.success});
+
+  factory CurrencyModel.fromJson(Map<String, dynamic> json) {
+    return CurrencyModel(
+      success: json['success'],
+      currencyNames: json['currencies'] != null
+          ? new Map<String, String>.from(json['currencies'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'success': success,
+        'currencies': currencyNames,
+      };
+
+  Map<String, dynamic> favoriteToJson() =>
+      {
+        'favorites': favoriteCurrency.map((currency) => currency.id).toList(),
+      };
+
+  void loadFavorite(Map<String, dynamic> json) {
+    var favorites = json['favorites'];
+    favoriteCurrency = favorites != null
+        ? List.from(favorites).map((id) => getByPosition(id)).toList()
+        : [];
+  }
+
+  List<Currency> favoriteCurrency = [];
 
   Currency getByPosition(int id) {
     String code = currencyNames.keys.elementAt(id);
     return Currency(id, code, currencyNames[code]);
   }
 
-  void selectFrom(Currency currency) {
-    if(currencyTo == currency) {currencyTo = null;}
-    currencyFrom = currency;
+  void addFavorite(Currency currency) {
+    favoriteCurrency.add(currency);
     notifyListeners();
   }
 
-  void selectTo(Currency currency) {
-    if(currencyFrom == currency) {currencyFrom = null;}
-    currencyTo = currency;
-    notifyListeners();
-  }
-
-  void swapFromTo() {
-    var currency = currencyFrom;
-    currencyFrom = currencyTo;
-    currencyTo = currency;
+  void removeFavorite(Currency currency) {
+    favoriteCurrency.remove(currency);
     notifyListeners();
   }
 }
